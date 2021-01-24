@@ -3,6 +3,7 @@
 from core.bot import Bot
 from win32api import ShellExecute
 import os
+import time
 
 
 if __name__ == "__main__":
@@ -13,5 +14,6 @@ if __name__ == "__main__":
         os.path.sep + "mcl.cmd"
     )
     ShellExecute(0, "open", mcl_path, "", "", 1)
+    time.sleep(7)
 
     Bot().start()

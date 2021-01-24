@@ -41,10 +41,13 @@ class Bot:
 
             async def sender(send_msg, wait_time=1.0, wait_msg=None):
                 if self.send_msg_flag:
-                    result = await graia_app.sendFriendMessage(friend, MessageChain.create([send_msg]))
-                    if result:
-                        self.set_send_msg_flag(False)
-                        threading.Timer(wait_time, self.set_send_msg_flag).start()
+                    if send_msg is not None:
+                        result = await graia_app.sendFriendMessage(friend, MessageChain.create([send_msg]))
+                        if result:
+                            self.set_send_msg_flag(False)
+                            threading.Timer(wait_time, self.set_send_msg_flag).start()
+                    else:
+                        log.e("msg is None")
                 elif wait_msg is not None:
                     await graia_app.sendGroupMessage(friend, MessageChain.create([wait_msg]))
 
@@ -61,10 +64,13 @@ class Bot:
                     should_respond = False
 
                 if should_respond and self.send_msg_flag:
-                    result = await graia_app.sendGroupMessage(group, MessageChain.create([send_msg]))
-                    if result:
-                        self.set_send_msg_flag(False)
-                        threading.Timer(wait_time, self.set_send_msg_flag).start()
+                    if send_msg is not None:
+                        result = await graia_app.sendGroupMessage(group, MessageChain.create([send_msg]))
+                        if result:
+                            self.set_send_msg_flag(False)
+                            threading.Timer(wait_time, self.set_send_msg_flag).start()
+                    else:
+                        log.e("msg is None")
                 elif wait_msg is not None:
                     await graia_app.sendGroupMessage(group, MessageChain.create([wait_msg]))
 
