@@ -20,7 +20,6 @@ class Corpus:
         log.i("sources: ", sources)
         for key in sources:
             for question in self.corpus[key]:
-                log.i("question: ", question)
                 if re.search(question[0], msg):
                     log.i("question match: ", question)
                     return self.getAnswer(question)

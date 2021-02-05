@@ -1,9 +1,14 @@
 # coding=utf-8
 
 import os
+import re
+import json
 from random import randint
+
+from graia.application import MessageChain
 from graia.application.message.elements.internal import Image
 from mist import logger as log
+from mist.http_util import download_img
 
 res_path = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__))
@@ -58,7 +63,44 @@ class Img(object):
 
 class EroImage(Img):
     cmd = [".*[来搞整].*[瑟色涩]图.*"]
+    cmd_receive = "吃点[瑟色涩]图"
+    cmd_receive_done = "可以拉了"
+    msg_receive = "你倒是发啊"
+    msg_receive_done = "不用你提醒我"
+    msg_download_success = "吃了"
+    msg_download_failure = "吃了个虚空涩图"
 
     def __init__(self):
         super().__init__()
+        self.receive_flag = False
         self.path = res_path + "\\img\\ero"
+
+    async def solve_receive_msg(self, message: MessageChain):
+        plain = message.asDisplay()
+        if re.search(EroImage.cmd_receive, plain):
+            self.set_receive_flag(True)
+            return self.msg_receive
+        elif re.search(EroImage.cmd_receive_done, plain):
+            self.set_receive_flag(False)
+            return self.msg_receive_done
+        if self.receive_flag:
+            images = message.get(Image)
+            if len(images) == 0:
+                return False
+            else:
+                return await self.receive_image(images)
+
+    async def receive_image(self, images: list):
+        flag = False
+        for image in images:
+            image = json.loads(image.json())
+            save_path = self.path + "/" + image["imageId"]
+            if await download_img(image["url"], save_path):
+                flag = self.msg_download_success
+            else:
+                flag = self.msg_download_failure
+        return flag
+
+    def set_receive_flag(self, flag: bool):
+        log.i("set receive flag: %s" % flag)
+        self.receive_flag = flag

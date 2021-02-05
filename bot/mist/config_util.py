@@ -4,6 +4,8 @@ import yaml
 import json
 import os
 
+SERVER_FLAG = True
+
 
 class Config:
     path = os.path.abspath(
@@ -26,18 +28,16 @@ class Config:
         return setting["authKey"]
 
     def get_aqiang_id(self):
-        path = os.path.abspath(
-            os.path.dirname(os.path.abspath(__file__))
-            + os.path.sep + ".." +
-            os.path.sep + ".." +
-            os.path.sep + "res" +
-            os.path.sep + "json" +
-            os.path.sep + "account.json"
-        )
+        path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + "/../../res/json/account.json")
         with open(path) as f:
             conf = json.load(f)
         return conf["aqiang_id"]
 
+    def get_manager_id(self):
+        path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + "/../../res/json/account.json")
+        with open(path) as f:
+            conf = json.load(f)
+        return conf["manager_id"]
 
 if __name__ == "__main__":
     print(Config().get_account_id())

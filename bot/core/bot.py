@@ -3,6 +3,7 @@
 from graia.broadcast import Broadcast
 from graia.application import GraiaMiraiApplication, Session
 from graia.application.message.chain import MessageChain
+from graia.application.message.elements.internal import Image
 import asyncio
 
 from graia.application.friend import Friend
@@ -40,7 +41,9 @@ class Bot:
         async def friend_message_listener(graia_app: GraiaMiraiApplication, friend: Friend, message: MessageChain):
 
             async def sender(send_msg, wait_time=1.0, wait_msg=None):
+                log.i("send msg: %s" % send_msg)
                 if self.send_msg_flag:
+                    log.i("send msg flag: %s" % self.send_msg_flag)
                     if send_msg is not None:
                         result = await graia_app.sendFriendMessage(friend, MessageChain.create([send_msg]))
                         if result:
@@ -49,11 +52,11 @@ class Bot:
                     else:
                         log.e("msg is None")
                 elif wait_msg is not None:
-                    await graia_app.sendGroupMessage(friend, MessageChain.create([wait_msg]))
+                    await graia_app.sendFriendMessage(friend, MessageChain.create([wait_msg]))
 
             msg = message.asDisplay()
             log.i("receive friend message: %s" % msg)
-            await message_handler.handle(msg, sender, friend=friend)
+            await message_handler.handle(message, sender, friend=friend)
 
         @bcc.receiver("GroupMessage")
         async def group_message_listener(graia_app: GraiaMiraiApplication, group: Group, member: Member, message: MessageChain):
@@ -76,7 +79,7 @@ class Bot:
 
             msg = message.asDisplay()
             log.i("receive group message: %s" % msg)
-            await message_handler.handle(msg, sender)
+            await message_handler.handle(message, sender)
 
         app.launch_blocking()
 

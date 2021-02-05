@@ -12,7 +12,7 @@ class CsvReader:
         return msg != ""
 
     def read_as_dict(self, path: str):
-        csv_file = csv.reader(open(path))
+        csv_file = csv.reader(open(path, encoding="gbk"))
         result = []
         for line in csv_file:
             line = [int(item) if item.isnumeric() else item for item in line]
@@ -24,7 +24,7 @@ class CsvReader:
             os.path.dirname(os.path.abspath(__file__))
             + os.path.sep + "/../../res/corpus/answers.csv"
         )
-        csv_file = csv.reader(open(path))
+        csv_file = csv.reader(open(path, encoding="gbk"))
         for index, line in enumerate(csv_file):
             if index == ans_index:
                 return line[0]
